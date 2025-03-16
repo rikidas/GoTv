@@ -6,21 +6,18 @@ import (
 	"net/http"
 )
 
-// Estructura para los datos del canal
+// Definir la estructura que coincide con la API
 type Channel struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-	URL  string `json:"url"`
+	Name         string  `json:"channel"`
+	URL          string  `json:"url"`
+	TimeShift    *string `json:"timeshift"`
+	HTTPReferrer *string `json:"http_referrer"`
+	UserAgent    *string `json:"user_agent"`
 }
 
-// Estructura para la respuesta de la API
-type ApiResponse struct {
-	Channels []Channel `json:"channels"`
-}
-
-// Función para obtener los canales de la API externa
+// Función para obtener los canales desde la API
 func FetchChannels(apiURL string) ([]Channel, error) {
-	// Hacer la solicitud HTTP GET
+	// Hacer la petición HTTP
 	resp, err := http.Get(apiURL)
 	if err != nil {
 		return nil, err
@@ -33,12 +30,14 @@ func FetchChannels(apiURL string) ([]Channel, error) {
 		return nil, err
 	}
 
-	// Decodificar JSON en la estructura ApiResponse
-	var response ApiResponse
-	err = json.Unmarshal(body, &response)
+	// Crear una variable para almacenar los canales
+	var channels []Channel
+
+	// Decodificar JSON en la estructura
+	err = json.Unmarshal(body, &channels)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.Channels, nil
+	return channels, nil
 }
